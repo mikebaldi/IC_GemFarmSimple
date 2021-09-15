@@ -24,6 +24,7 @@ Review AutoHotkey tutorials and documentation.
 ## Notes:
 1. This script is for the Steam PC version of the game.
 2. This script will take control of the mouse to make clicks for specializations and for resetting an adventure.
+3. This script has undergone limited testing on Idle Champions resolutions outside of 1280x720.
 
 # Settings Documentation:
 
