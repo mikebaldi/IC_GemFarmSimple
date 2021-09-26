@@ -4,19 +4,17 @@ This script reads system memory. I do not know CNE's stance on reading system me
 # Instructions for GemFarmSimple.AHK:
 1. Read and familiarize yourself with all topics covered in Maviin's FAQ: https://docs.google.com/document/d/1ek-66HsOT3VABWdBNh-5iMOSd7UP5ssTRjgS4xkO1To/edit#
 2. Download and install AutoHotkey: https://www.autohotkey.com/
-3. Download `GemFarmSimpleI.AHK`, `IC_MemoryFunctions.AHK`, `IC_ServerCallFunctions.AHK`, `IC_GeneralFunctions.AHK`, `IC_LevelUpFunctions.AHK`, `json.AHK`, and `classMemory.AHK` to the same folder.
-    * Occasionally, I may upload different versions of IC_MemoryFunctions.AHK for different versions of IC. Any Memory Function file with `_v###` has not been tested with the script by me and only tested for accurate memory reads. The file will need to be renamed, deleting the `_v###` portion.
-4. `IC_MemoryFunctions.AHK` and `IC_ServerCallFunctions.AHK` can be downloaded from the following repository: https://github.com/mikebaldi/Idle-Champions
-5. Scan all downloaded files with trusted antivirus software.
-6. Right click GemFarmSimple.AHK and select run script.
-7. If this is your first time running the script, click the `Change or View Install Path` button on the settings tab of the GUI and confirm it is correct or update accordingly.
-8. If this is your first time running the script, a new champion you want to use in the script is released, or a soft cap increase was released then click the `Build Defines` button. In the field on the GUI window that pops up, enter the champion ID of the most recent champion released. If you are unsure of the champion ID, use https://idle.kleho.ru/hero/ or http://idlechampions.soulreaver.usermd.net/champions.html 
-9. With the correct ID entered, click the `Build and Close` button. Note, building the defines can take some time, please be patient.
-10. If this is your first time running the script or you have built new defines then click the `Select Specializations` button. Choose your specialization choice for each champion or confirm they are correct then click the `Save` button, confirm your selections are correct, and then click the `Close` button. Note, building the specialization settings GUI can take some time, please be patient.
-11. On the settings tab of the GUI enter or confirm your settings are correct and then click the `Save Settings` button. This will also save the defines and specialization settings you built as part of previous steps, allowing you to skip steps 6 through 9 on subsquent uses of the script, except as noted above. See below for Settings Documentation. Note: this will create a new file in the script directory: GemFarmSimpleUserSettings.JSON. This file will be loaded automatically the next time the script is run.
-12. In the in game settings, uncheck **'Disable F1-F12 Leveling'** and if using seat 12 champion then make sure to change Steam's settings for screenshots.
-13. Load into a Free Play Adventure, assign your speed gem farming team to formation save slot 1 (the one accessed with button 'q'), only assign three familiars to the field with none to be used anywhere else, and click the `Run` button.
-14. Click the `X` button in the upper right corner to close and exit the script.
+3. Download `GemFarmSimpleI.AHK`, `classIdleChampionsMemory.AHK`, `classServerCalls.AHK`, `IC_GeneralFunctions.AHK`, `IC_LevelUpFunctions.AHK`, `json.AHK`, and `classMemory.AHK` to the same folder.
+4. Scan all downloaded files with trusted antivirus software.
+5. Right click GemFarmSimple.AHK and select run script.
+6. If this is your first time running the script, click the `Change or View Install Path` button on the settings tab of the GUI and confirm it is correct or update accordingly.
+7. If this is your first time running the script, a new champion you want to use in the script is released, or a soft cap increase was released then click the `Build Defines` button. In the field on the GUI window that pops up, enter the champion ID of the most recent champion released. If you are unsure of the champion ID, use https://idle.kleho.ru/hero/ or http://idlechampions.soulreaver.usermd.net/champions.html 
+8. With the correct ID entered, click the `Build and Close` button. Note, building the defines can take some time, please be patient.
+9. If this is your first time running the script or you have built new defines then click the `Select Specializations` button. Choose your specialization choice for each champion then click the `Save` button, confirm your selections are correct, and then click the `Close` button. Note, building the specialization settings GUI can take some time, please be patient.
+10. On the settings tab of the GUI enter or confirm your settings are correct and then click the `Save Settings` button. This will also save the defines and specialization settings you built as part of previous steps, allowing you to skip steps 6 through 9 on subsquent uses of the script, except as noted above. See below for Settings Documentation. Note: this will create a new file in the script directory: GemFarmSimpleUserSettings.JSON. This file will be loaded automatically the next time the script is run.
+11. In the in game settings, uncheck **'Disable F1-F12 Leveling'** and if using seat 12 champion then make sure to change Steam's settings for screenshots.
+12. Load into a Free Play Adventure, assign your speed gem farming team to formation save slot 1 (the one accessed with button 'q'), only assign three familiars to the field with none to be used anywhere else, and click the `Run` button.
+13. Click the `X` button in the upper right corner to close and exit the script.
 
 ## Recommended Additional Steps:
 Review AutoHotkey tutorials and documentation.
@@ -25,6 +23,7 @@ Review AutoHotkey tutorials and documentation.
 1. This script is for the Steam PC version of the game.
 2. This script will take control of the mouse to make clicks for specializations and for resetting an adventure.
 3. This script has undergone limited testing on Idle Champions resolutions outside of 1280x720.
+4. This script does not support specializing Morgaen, Selise, or any champion with multiple specializations that pick from a single pool.
 
 # Settings Documentation:
 
