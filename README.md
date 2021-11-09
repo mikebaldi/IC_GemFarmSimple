@@ -4,7 +4,7 @@ This script reads system memory. I do not know CNE's stance on reading system me
 # Instructions for GemFarmSimple.AHK:
 1. Read and familiarize yourself with all topics covered in Maviin's FAQ: https://docs.google.com/document/d/1ek-66HsOT3VABWdBNh-5iMOSd7UP5ssTRjgS4xkO1To/edit#
 2. Download and install AutoHotkey: https://www.autohotkey.com/
-3. Download `GemFarmSimpleI.AHK`, `classIdleChampionsMemory.AHK`, `classServerCalls.AHK`, `IC_GeneralFunctions.AHK`, `IC_LevelUpFunctions.AHK`, `json.AHK`, and `classMemory.AHK` to the same folder.
+3. Download `GemFarmSimpleI.AHK`, `IC_MemoryFunctions.AHK`, `IC_ArrayFunctions.AHK`, `IC_GameManagerClass.AHK`, `classServerCalls.AHK`, `IC_GeneralFunctions.AHK`, `IC_LevelUpFunctions.AHK`, `json.AHK`, and `classMemory.AHK` to the same folder.
 4. Scan all downloaded files with trusted antivirus software.
 5. Right click GemFarmSimple.AHK and select run script.
 6. If this is your first time running the script, click the `Change or View Install Path` button on the settings tab of the GUI and confirm it is correct or update accordingly.
