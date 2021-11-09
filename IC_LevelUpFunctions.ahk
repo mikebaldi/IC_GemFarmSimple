@@ -1,5 +1,5 @@
 ;a group of functions for leveling up and specializing champions
-global lufScriptVer := "v1.0, 9/25/21"
+global lufScriptVer := "v2.0, 11/8/21"
 
 ;object we will use to store our defines
 global HeroDefines := {}
@@ -333,12 +333,12 @@ LevelUpByID(ChampSeat, ChampID, ByRef ChampLvl, sleepMS)
     DirectedInput("{F" . ChampSeat . "}")
     ;wait for memory to update
     Sleep, sleepMS
-    ChampLvl := memory.ReadMem( memory.ChampLevelByID[ ChampID ], "Int")
+    ChampLvl := ReadChampLvlByID(1,, ChampID)
     ;check if current level is a specialization level
     if (SpecSettings[ChampID][ChampLvl]["RequiredLvl"] == ChampLvl)
     {
         SpecializeChamp(ChampID, ChampLvl, ChampSeat, sleepMS)
-        ChampLvl := memory.ReadMem( memory.ChampLevelByID[ ChampID ], "Int")
+        ChampLvl := ReadChampLvlByID(1,, ChampID)
         Return
     }
     Return
@@ -372,17 +372,17 @@ LevelToTargetByID(ChampID, TargetLvl, specBool, sleepMS)
     {
         TargetLvl := HeroDefines[ChampID]["MaxLvl"]
     }
-    ChampLvl := memory.ReadMem( memory.ChampLevelByID[ ChampID ], "Int")
-    while (specBool == 0 AND TargetLvl > memory.ReadMem( memory.ChampLevelByID[ ChampID ], "Int"))
+    ChampLvl := ReadChampLvlByID(1,, ChampID)
+    while (specBool == 0 AND TargetLvl > ReadChampLvlByID(1,, ChampID))
     {
         LevelUpByID(ChampSeat, ChampID, ChampLvl, sleepMS)
-        ChampLvl := memory.ReadMem( memory.ChampLevelByID[ ChampID ], "Int")
+        ChampLvl := ReadChampLvlByID(1,, ChampID)
         specBool := IsSpecialized(ChampID)     
     }
-    while (TargetLvl > memory.ReadMem( memory.ChampLevelByID[ ChampID ], "Int"))
+    while (TargetLvl > ReadChampLvlByID(1,, ChampID))
     {
         DirectedInput("{F" . ChampSeat . "}")
-        ChampLvl := memory.ReadMem( memory.ChampLevelByID[ ChampID ], "Int")
+        ChampLvl := ReadChampLvlByID(1,, ChampID)
     }
     Return
 }
@@ -414,8 +414,8 @@ Functions for specializing a champion or checking specialization status
 */
 SpecializeChamp(ChampID, ChampLvl, ChampSeat, sleepMS)
 {
-    ScreenCenterX := ( memory.ReadMem( memory.currentScreenWidth, "Int" ) / 2)
-    ScreenCenterY := ( memory.ReadMem( memory.currentScreenHeight, "Int" ) / 2)
+    ScreenCenterX := ( ReadScreenWidth() / 2)
+    ScreenCenterY := ( ReadScreenHeight() / 2)
     yClick := ScreenCenterY + 225
     ButtonWidth := 70
     ButtonSpacing := 180
@@ -435,7 +435,7 @@ SpecializeChamp(ChampID, ChampLvl, ChampSeat, sleepMS)
     xClick := xFirstButton + 35 + (250 * (Choice - 1))
     StartTime := A_TickCount
     ElapsedTime := 0
-    While (UpgradeCount > memory.ReadMem( memory.ChampUpgradeCountByID[ ChampID ], "Int" ) AND ElapsedTime < 5000)
+    While (UpgradeCount > ReadChampUpgradeCountByID(,, ChampID) AND ElapsedTime < 5000)
     {
         WinActivate, ahk_exe IdleDragons.exe
         MouseClick, Left, xClick, yClick, 1
@@ -443,7 +443,7 @@ SpecializeChamp(ChampID, ChampLvl, ChampSeat, sleepMS)
         Sleep, sleepMS
         UpdateElapsedTime(StartTime)
     }
-    if (UpgradeCount <= memory.ReadMem( memory.ChampUpgradeCountByID[ ChampID ], "Int" ))
+    if (UpgradeCount <= ReadChampUpgradeCountByID(,, ChampID))
     {
         ;successfully specialized
         Return 1
@@ -477,7 +477,7 @@ IsSpecialized(ChampID)
     i := 0
     for k, v in HeroDefines[ChampID]["SpecDefines"]
     {
-        if (v["UpgradeCount"] <= memory.ReadMem( memory.ChampUpgradeCountByID[ ChampID ], "Int" ) AND v["UpgradeCount"])
+        if (v["UpgradeCount"] <= ReadChampUpgradeCountByID(,, ChampID) AND v["UpgradeCount"])
         {
             ++i
         }
@@ -494,12 +494,12 @@ IsSpecialized(ChampID)
 */
 SpecializationSelected(ChampID)
 {
-    ChampLvl := memory.ReadMem( memory.ChampLevelByID[ ChampID ], "Int")
+    ChampLvl := ReadChampLvlByID(1,, ChampID)
     for k, v in HeroDefines[ChampID]["SpecDefines"]
     {
         if (v["RequiredLvl"] == ChampLvl)
         {
-            if (memory.ReadMem( memory.ChampUpgradeCountByID[ ChampID ], "Int" ) >= v["UpgradeCount"])
+            if (ReadChampUpgradeCountByID(,, ChampID) >= v["UpgradeCount"])
             {
                 Return 1
             }
@@ -527,13 +527,13 @@ Functions for finding and loading formation save data
 GetFavoriteSavedFormation(favorite := 1, ignoreEmptySlots := 0)
 {
     ;reads memory for the number of saved formations
-    formationSavesSize := memory.ReadMem( memory.FormationSavesV2_size, "Int" )
+    formationSavesSize := ReadFormationSavesSize()
     ;cycle through saved formations to find save slot of Favorite
     formationSaveSlot := -1
     i := 0
     loop, %formationSavesSize%
     {
-        if ( memory.ReadMem( memory.FormationSavesV2Favorite[ i ], "Int" ) == favorite)
+        if ( ReadFormationFavoriteIDBySlot(,, i) == favorite)
         {
             formationSaveSlot := i
             Break
@@ -546,54 +546,8 @@ GetFavoriteSavedFormation(favorite := 1, ignoreEmptySlots := 0)
     }
     else
     {
-        Return CompileSavedFormationArray( formationSaveSlot, 1 )
+        Return ReadFormationSaveBySlot( ,,formationSaveSlot, 1 )
     }
-}
-
-CompileSavedFormationArray( saveItem, ignoreEmptySlots )
-{
-    _size := memory.ReadMem( memory.FormationSavesV2Formation_size[ slot ], "Int" )
-    Formation := {}
-    i := 0
-    loop, %_size%
-    {
-        champID := memory.ReadMem( memory.FormationSavesV2FormationChampID[ saveItem, i ], "Int" )
-        if ( !ignoreEmptySlots )
-        {
-            Formation.Push( champID )
-        }
-        else if ( champID != -1 )
-        {
-            Formation.Push( champID )
-        }
-        ++i
-    }
-    return Formation
-}
-
-/*
-    A function that looks for a saved formation matching a name. Returns -1 on failure.
-    Optional Paramater name, string
-
-    Requires #include classMemory.ahk and call functions OpenProcess() and ModuleBaseAddress() are called each time client is restarted
-*/
-GetSavedFormationSlotByName(name)
-{
-    ;reads memory for the number of saved formations
-    formationSavesSize := memory.ReadMem( memory.FormationSavesV2_size, "Int" )
-    ;cycle through saved formations to find save slot of Favorite
-    formationSaveSlot := -1
-    i := 0
-    loop, %formationSavesSize%
-    {
-        if (memory.ReadMem( memory.FormationSavesV2Name[ i ], "String" ) == name)
-        {
-            formationSaveSlot := i
-            Break
-        }
-        ++i
-    }
-    Return formationSaveSlot
 }
 
 /*
@@ -605,13 +559,13 @@ GetSavedFormationSlotByName(name)
 GetSavedFormationSlotByFavorite(favorite := 1)
 {
     ;reads memory for the number of saved formations
-    formationSavesSize := memory.ReadMem( memory.FormationSavesV2_size, "Int" )
+    formationSavesSize := ReadFormationSavesSize()
     ;cycle through saved formations to find save slot of Favorite
     formationSaveSlot := -1
     i := 0
     loop, %formationSavesSize%
     {
-        if ( memory.ReadMem( memory.FormationSavesV2Favorite[ item ], "Int" ) == favorite)
+        if ( ReadFormationFavoriteIDBySlot(,, i ) == favorite)
         {
             formationSaveSlot := i
             Break

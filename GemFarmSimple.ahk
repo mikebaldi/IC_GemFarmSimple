@@ -1,7 +1,7 @@
 ;Modron Automation Gem Farming Script
 ;by mikebaldi1980
 ;put together with the help from many different people. thanks for all the help.
-global ScriptVer := "v1.0, 9/25/21"
+global ScriptVer := "v2.0, 11/8/21"
 
 #SingleInstance, Force
 SetWorkingDir, %A_ScriptDir%
@@ -14,8 +14,7 @@ CoordMode, Mouse, Client
 #include JSON.ahk
 
 ;pointer addresses, offsets, and functions for reading specific locations of memory
-#include classIdleChampionsMemory.ahk
-global memory := new _classIdleChampionsMemoryReader
+#include IC_MemoryFunctions.ahk
 
 ;server call functions and variables
 #include classServerCalls.ahk
@@ -401,12 +400,11 @@ GemFarm()
     GuiControl, MyWindow:, LoopID, Loading game data to script.
     GuiControl, MyWindow:, ElapsedTimeID,
     ;open process to read memory
-    memory.OpenProcess()
+    OpenProcess()
     ;get module base address to use for memory reads
-    memory.ModuleBaseAddress()
-    ;memory := new _classIdleChampionsMemoryReader
+    ModuleBaseAddress()
     ;read adventure id for script to load into on resets or errors. check the value is reasonable
-    advtoload := memory.ReadMem( memory.currentObjectiveID, "Int" )
+    advtoload := ReadCurrentObjID()
     if (advtoload == "")
     {
         MsgBox, Failed to read Adventure ID, check memory function file is up to date. Ending script.
@@ -426,7 +424,7 @@ GemFarm()
         Return
     }
     ;read current zone. check the value is reasonable.
-    CurrentZone := memory.ReadMem( memory.currentZone, "Int" )
+    CurrentZone := ReadCurrentZone()
     if (CurrentZone == "")
     {
         MsgBox, Failed to read current zone, check memory function file is up to date. Ending script.
@@ -442,7 +440,7 @@ GemFarm()
     ;variable used to check if progress has halted.
     PrevZone := CurrentZone
     ;read user id for script to use to make server calls. check the value is reasonable.
-    UserID := memory.ReadMem( memory.userID, "Int" )
+    UserID := ReadUserID()
     if (UserID == "")
     {
         MsgBox, Failed to read user ID, check memory function file is up to date. Ending script.
@@ -450,7 +448,7 @@ GemFarm()
         Return
     }
     ;read user hash for script to make server calls. check the value is reasonable.
-    UserHash := memory.ReadMem( memory.userHash, "String" )
+    UserHash := ReadUserHash()
     if (UserHash == "")
     {
         MsgBox, Failed to read user hash, check memory function file is up to date. Ending script.
@@ -467,8 +465,8 @@ GemFarm()
         GuiControl, MyWindow:, SaveNeededID, Script ended.
         Return
     }
-    gemsStart := memory.ReadMem( memory.gems, "Int" )
-    gemsSpentStart := memory.ReadMem( memory.gemsSpent, "Int" )
+    gemsStart := ReadGems()
+    gemsSpentStart := ReadGemsSpent()
     ;variable used to check how long without progress
     tCurrentZone := A_TickCount
     ;variable used to track time on current run
@@ -511,7 +509,7 @@ GemFarm()
         ;speed up boss bag pick up
         DoubleG()
         ;update current zone timer
-        CurrentZone := memory.ReadMem( memory.currentZone, "Int" )
+        CurrentZone := ReadCurrentZone()
         if (CurrentZone > PrevZone)
         {
             PrevZone := CurrentZone
@@ -546,12 +544,12 @@ GemFarm()
             GuiControl, MyWindow:, LoopID, Restarting IC
             LoadIC()
             ;reset variables associated with checking if stuck on current zone too long.
-            CurrentZone := memory.ReadMem( memory.currentZone, "Int" )
+            CurrentZone := ReadCurrentZone()
             PrevZone := CurrentZone
             tCurrentZone := A_TickCount
             ++runCount
             UpdateStats(tCurrentRun, tTotalRun, runCount, gemsStart, gemsSpentStart)
-            CurrentZone := memory.ReadMem( memory.currentZone, "Int" )
+            CurrentZone := ReadCurrentZone()
         }
         UpdateTimers(tCurrentRun, tTotalRun)
     }
@@ -587,7 +585,7 @@ UpdateStats(ByRef tCurrentRun, tTotalRun, runCount, gemsStart, gemsSpentStart)
     GuiControl, MyWindow:, PrevRunTimeID, % ElapsedTime
     ElapsedTime := Round((A_TickCount - tTotalRun) / (60000 * runCount), 2)
     GuiControl, MyWindow:, AvgRunTimeID, % ElapsedTime
-    gems := memory.ReadMem( memory.gems, "Int" ) - gemsStart + memory.ReadMem( memory.gemsSpent, "Int" ) - gemsSpentStart
+    gems := ReadGems() - gemsStart + ReadGemsSpent() - gemsSpentStart
     GuiControl, MyWindow:, GemsTotalID, % gems
     ElapsedTime := (A_TickCount - tTotalRun) / 3600000
     gph := Round((gems/ElapsedTime), 2)

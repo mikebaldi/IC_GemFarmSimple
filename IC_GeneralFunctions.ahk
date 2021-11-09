@@ -1,4 +1,4 @@
-global gfScriptVer := "v1.0, 9/25/21"
+global gfScriptVer := "v2.0, 11/8/21"
 
 ;Requires #include JSON.ahk
 LoadObjectFromJSON(FileName)
@@ -55,9 +55,9 @@ SafetyCheck(InstallPath := "C:\Program Files (x86)\Steam\steamapps\common\IdleCh
     if i
     {
         Sleep 7500
-        memory.OpenProcess()
+        OpenProcess()
         Sleep 5000
-        memory.ModuleBaseAddress()
+        ModuleBaseAddress()
     }
     Return i
 }
@@ -65,7 +65,7 @@ SafetyCheck(InstallPath := "C:\Program Files (x86)\Steam\steamapps\common\IdleCh
 ;Double tap auto progress after defeating a boss
 DoubleG()
 {
-    if (!Mod(memory.ReadMem( memory.currentZone, "Int" ), 5) AND Mod( memory.ReadMem( memory.highestZone, "Int" ), 5) AND !memory.ReadMem( memory.Transitioning, "Char" ) )
+    if (!Mod(ReadCurrentZone(), 5) AND Mod( ReadHighestZone(), 5) AND !ReadTransitioning() )
     {
         DirectedInput("g")
         DirectedInput("g")
@@ -84,14 +84,14 @@ EndAdventure()
     ;bring up end adventure dialog box
     DirectedInput("r")
     ;dialog box appears to always have same resolution and buttons can be estimated from center of screen
-    xClick := ( memory.ReadMem( memory.currentScreenWidth, "Int" ) / 2) - 80
-    yClickMax := memory.ReadMem( memory.currentScreenHeight, "Int" )
+    xClick := ( ReadScreenWidth() / 2) - 80
+    yClickMax := ReadScreenHeight()
     yClick := yClickMax / 2
     StartTime := A_TickCount
     ElapsedTime := 0
     ;attempt to click end adventure button for 30s or until memory reads adventure is resetting
     ;closing IC immediately after this can lead to the adventure not actually resetting and unexpected results
-    while(!memory.ReadMem( memory.Resetting, "Char" ) AND ElapsedTime < 30000)
+    while(!ReadResettting() AND ElapsedTime < 30000)
     {
         WinActivate, ahk_exe IdleDragons.exe
         MouseClick, Left, xClick, yClick, 1
@@ -129,7 +129,7 @@ GameLoaded()
 {
     StartTime := A_TickCount
     ElapsedTime := 0
-    While (memory.ReadMem( memory.gameStarted, "Char" ) != 1 AND ElapsedTime < 60000)
+    While (ReadGameStarted() != 1 AND ElapsedTime < 60000)
     {
         Sleep, 1000
         ElapsedTime := UpdateElapsedTime(StartTime)
@@ -140,11 +140,11 @@ GameLoaded()
     }
     StartTime := A_TickCount
     ElapsedTime := 0
-    While ( memory.ReadMem( memory.finishedOfflineProgressWindow, "Char" ) != 1 AND ElapsedTime < 30000)
+    While ( ReadFinishedOfflineProgressWindow() != 1 AND ElapsedTime < 30000)
     {
         Sleep, 1000
         ElapsedTime := UpdateElapsedTime(StartTime)
-        if (memory.ReadMem( memory.monstersSpawnedThisAreaOP, "Int" ) != memory.ReadMem( memory.monstersSpawnedThisArea, "Int" ) AND memory.ReadMem( memory.monstersSpawnedThisArea, "Int" ))
+        if (ReadMonstersSpawnedThisAreaOL() != ReadMonstersSpawned() AND ReadMonstersSpawned())
         {
             Break
         }
